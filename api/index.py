@@ -4,6 +4,7 @@ from langchain.llms import OpenAI
 from langchain.document_loaders import NotionDBLoader
 
 import os
+import json
 
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 NOTION_INTEGRATION_SECRET = os.getenv('NOTION_INTEGRATION_SECRET')
@@ -40,4 +41,4 @@ def instructions():
         request_timeout_sec=15,  # optional, defaults to 10
     )
     docs = loader.load()
-    return docs
+    return json.dumps(docs, indent=4)
