@@ -41,4 +41,5 @@ def instructions():
         request_timeout_sec=15,  # optional, defaults to 10
     )
     docs = loader.load()
-    return json.dumps(docs, indent=4)
+    docs_string = f"docs: {docs}"
+    return json.dumps(docs_string, indent=4)
