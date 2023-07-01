@@ -83,8 +83,8 @@ def copilot():
     """ copilot """
     prompt = ""
 
-    instructions = return load_notion_db(NOTION_INSTRUCTIONS_DB)
-    examples = return load_notion_db(NOTION_EXAMPLES_DB)
+    instructions = load_notion_db(NOTION_INSTRUCTIONS_DB)
+    examples = load_notion_db(NOTION_EXAMPLES_DB)
 
     # context = load_notion_page_from_url(request.args.get('context_url'))
     context = """
