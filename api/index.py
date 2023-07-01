@@ -83,8 +83,38 @@ def copilot():
     """ copilot """
     prompt = ""
 
-    context = load_notion_page_from_url(request.args.get('context_url'))
+    instructions = return load_notion_db(NOTION_INSTRUCTIONS_DB)
+    examples = return load_notion_db(NOTION_EXAMPLES_DB)
 
-    prompt = f"{context}"
+    # context = load_notion_page_from_url(request.args.get('context_url'))
+    context = """
+    Member Profile:
+
+    Name: Alexis
+
+    Sex: Male
+
+    Age: 53
+
+    Episode ID: 123abc
+
+    Episode issue type: Intake
+
+    Transcript:
+
+    Chloe: Do you experience chest pain?
+    Member: Yes
+    Chloe: Do you experience vertigo?
+    Member: Yes
+    Chloe: Do you have a high heart rate?
+    Member: Yes
+    """
+
+    prompt = f"""{instructions}\n\n\n
+    # Examples:\n
+    {examples}
+    \n\n\n
+    # Assignement: You are asked for assistance and receive the following episode\n
+    {context}"""
 
     return llm.predict(prompt)
