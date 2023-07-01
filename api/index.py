@@ -32,7 +32,18 @@ def home():
 def about():
     return 'API key:' + sanitize_string(OPENAI_API_KEY)
 
-'''instructions'''
+### instructions
+# [
+#     Document(
+#         page_content='test of the first instruction', 
+#         metadata={'description': None, 'tags': [], 'name': 'first instruction', 'id': '99743a38-f434-4a2e-bc0a-6ecdcd0856b1'}), 
+#     Document(
+#         page_content='', 
+#         metadata={'description': None, 'tags': [], 'name': 'third instruction', 'id': 'a8a1dd4b-9e69-4920-bfd2-9025095ccd44'}), 
+#     Document(
+#         page_content='', 
+#         metadata={'description': None, 'tags': [], 'name': 'second instruction', 'id': 'ebe2b3c6-a118-4eac-be20-d8c1bfea72a4'})
+# ]
 @app.route('/instructions')
 def instructions():
     loader = NotionDBLoader(
