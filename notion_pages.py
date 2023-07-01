@@ -20,7 +20,7 @@ class NotionPageLoader(NotionDBLoader):
         request_timeout_sec: Optional[int] = 10
     ) -> None:
         super().__init__(integration_token=integration_token,
-                         database_id=None, request_timeout_sec=request_timeout_sec)
+                         database_id='None', request_timeout_sec=request_timeout_sec)
 
     def load_page_by_id(self, page_id) -> Document:
         """ load_page_by_id """
