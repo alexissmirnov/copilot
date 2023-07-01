@@ -6,7 +6,8 @@ from langchain.document_loaders import NotionDBLoader
 
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 NOTION_INTEGRATION_SECRET = os.getenv('NOTION_INTEGRATION_SECRET')
-NOTION_DB = os.getenv('NOTION_DB')
+NOTION_INSTRUCTIONS_DB = os.getenv('NOTION_INSTRUCTIONS_DB')
+NOTION_EXAMPLES_DB = os.getenv('NOTION_EXAMPLES_DB')
 
 app = Flask(__name__)
 
@@ -31,7 +32,7 @@ def home():
 @app.route('/about')
 def about():
     """ about """
-    return f"API key: {sanitize_string(OPENAI_API_KEY)}\nNotion DB: {sanitize_string(NOTION_DB)}"
+    return f"API key: {sanitize_string(OPENAI_API_KEY)}\nNotion DB: {sanitize_string(NOTION_INTEGRATION_SECRET)}"
 
 # instructions
 # [
@@ -50,10 +51,19 @@ def about():
 @app.route('/instructions')
 def instructions():
     """ instrustions """
+    return load_notion_db(NOTION_INSTRUCTIONS_DB)
+
+@app.route('/examples')
+def examples():
+    """ examples """
+    return load_notion_db(NOTION_EXAMPLES_DB)
+
+
+def load_notion_db(database_id):
+    """ loads db contents """
     loader = NotionDBLoader(
         integration_token=NOTION_INTEGRATION_SECRET,
-        database_id=NOTION_DB,
-        request_timeout_sec=15,  # optional, defaults to 10
+        database_id=database_id
     )
     docs = loader.load()
     output = 'output: \n'
