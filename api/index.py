@@ -1,8 +1,10 @@
 ''' index '''
 import os
-from flask import Flask
+from urllib.parse import urlparse
+from flask import Flask, request
 from langchain.llms import OpenAI
 from langchain.document_loaders import NotionDBLoader
+from notion_pages import NotionPageLoader
 
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 NOTION_INTEGRATION_SECRET = os.getenv('NOTION_INTEGRATION_SECRET')
@@ -23,42 +25,6 @@ def sanitize_string(input_string):
     return transformed_string
 
 
-@app.route('/')
-def home():
-    """ home """
-    return llm.predict("What would be a good company name for a company that makes colorful socks?")
-
-
-@app.route('/about')
-def about():
-    """ about """
-    return f"API key: {sanitize_string(OPENAI_API_KEY)}\nNotion DB: {sanitize_string(NOTION_INTEGRATION_SECRET)}"
-
-# instructions
-# [
-#     Document(
-#         page_content='test of the first instruction',
-#         metadata={'description': None, 'tags': [], 'name': 'first instruction', 'id': '99743a38-f434-4a2e-bc0a-6ecdcd0856b1'}),
-#     Document(
-#         page_content='',
-#         metadata={'description': None, 'tags': [], 'name': 'third instruction', 'id': 'a8a1dd4b-9e69-4920-bfd2-9025095ccd44'}),
-#     Document(
-#         page_content='',
-#         metadata={'description': None, 'tags': [], 'name': 'second instruction', 'id': 'ebe2b3c6-a118-4eac-be20-d8c1bfea72a4'})
-# ]
-
-
-@app.route('/instructions')
-def instructions():
-    """ instrustions """
-    return load_notion_db(NOTION_INSTRUCTIONS_DB)
-
-@app.route('/examples')
-def examples():
-    """ examples """
-    return load_notion_db(NOTION_EXAMPLES_DB)
-
-
 def load_notion_db(database_id):
     """ loads db contents """
     loader = NotionDBLoader(
@@ -71,3 +37,54 @@ def load_notion_db(database_id):
         output = f"{output}\n# {doc.metadata['name']}\n{doc.page_content}"
 
     return output
+
+
+def load_notion_page_from_url(url) -> str:
+    """load_notion_page_from_url"""
+    parsed_url = urlparse(url)
+    path = parsed_url.path
+
+    # Get the last portion of the path
+    page_id = path.rsplit('/', 1)[-1]
+
+    loader = NotionPageLoader(
+        integration_token=NOTION_INTEGRATION_SECRET
+    )
+    doc = loader.load_page_by_id(page_id)
+    return doc.page_content
+
+
+@app.route('/')
+def home():
+    """ home """
+    return llm.predict("What would be a good company name for a company that makes colorful socks?")
+
+
+@app.route('/about')
+def about():
+    """ about """
+    return f"API key: {sanitize_string(OPENAI_API_KEY)}\nNotion DB: {sanitize_string(NOTION_INTEGRATION_SECRET)}"
+
+
+@app.route('/instructions')
+def instructions():
+    """ instrustions """
+    return load_notion_db(NOTION_INSTRUCTIONS_DB)
+
+
+@app.route('/examples')
+def examples():
+    """ examples """
+    return load_notion_db(NOTION_EXAMPLES_DB)
+
+
+@app.route('/copilot')
+def copilot():
+    """ copilot """
+    prompt = ""
+
+    context = load_notion_page_from_url(request.args.get('context_url'))
+
+    prompt = f"{context}"
+
+    return llm.predict(prompt)
