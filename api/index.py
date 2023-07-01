@@ -1,10 +1,10 @@
 ''' index '''
 import os
-from urllib.parse import urlparse
-from flask import Flask, request
+# from urllib.parse import urlparse
+from flask import Flask
 from langchain.llms import OpenAI
 from langchain.document_loaders import NotionDBLoader
-from notion_pages import NotionPageLoader
+# from notion_pages import NotionPageLoader
 
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 NOTION_INTEGRATION_SECRET = os.getenv('NOTION_INTEGRATION_SECRET')
@@ -39,19 +39,19 @@ def load_notion_db(database_id):
     return output
 
 
-def load_notion_page_from_url(url) -> str:
-    """load_notion_page_from_url"""
-    parsed_url = urlparse(url)
-    path = parsed_url.path
+# def load_notion_page_from_url(url) -> str:
+#     """load_notion_page_from_url"""
+#     parsed_url = urlparse(url)
+#     path = parsed_url.path
 
-    # Get the last portion of the path
-    page_id = path.rsplit('/', 1)[-1]
+#     # Get the last portion of the path
+#     page_id = path.rsplit('/', 1)[-1]
 
-    loader = NotionPageLoader(
-        integration_token=NOTION_INTEGRATION_SECRET
-    )
-    doc = loader.load_page_by_id(page_id)
-    return doc.page_content
+#     loader = NotionPageLoader(
+#         integration_token=NOTION_INTEGRATION_SECRET
+#     )
+#     doc = loader.load_page_by_id(page_id)
+#     return doc.page_content
 
 
 @app.route('/')
@@ -83,8 +83,8 @@ def copilot():
     """ copilot """
     prompt = ""
 
-    instructions = load_notion_db(NOTION_INSTRUCTIONS_DB)
-    examples = load_notion_db(NOTION_EXAMPLES_DB)
+    instructions_content = load_notion_db(NOTION_INSTRUCTIONS_DB)
+    examples_content = load_notion_db(NOTION_EXAMPLES_DB)
 
     # context = load_notion_page_from_url(request.args.get('context_url'))
     context = """
@@ -110,9 +110,9 @@ def copilot():
     Member: Yes
     """
 
-    prompt = f"""{instructions}\n\n\n
+    prompt = f"""{instructions_content}\n\n\n
     # Examples:\n
-    {examples}
+    {examples_content}
     \n\n\n
     # Assignement: You are asked for assistance and receive the following episode\n
     {context}"""
