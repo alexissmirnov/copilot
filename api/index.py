@@ -32,9 +32,9 @@ def load_notion_db(database_id):
         database_id=database_id
     )
     docs = loader.load()
-    output = 'output: \n'
+    output = ''
     for doc in docs:
-        output = f"{output}\n# {doc.metadata['name']}\n{doc.page_content}"
+        output = f"{output}# {doc.metadata['name']}\n{doc.page_content}\n\n"
 
     return output
 
