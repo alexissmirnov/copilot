@@ -15,10 +15,11 @@ NOTION_INSTRUCTIONS_DB = os.getenv('NOTION_INSTRUCTIONS_DB')
 NOTION_EXAMPLES_DB = os.getenv('NOTION_EXAMPLES_DB')
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": ["*dialogue.co", "http://localhost:4200"]}})
+# CORS(app, resources={r"/*": {"origins": ["*dialogue.co", "http://localhost:4200"]}})
+CORS(app)
 logging.getLogger('flask_cors').level = logging.DEBUG
 
-llm = OpenAI(openai_api_key=OPENAI_API_KEY)
+llm = OpenAI(openai_api_key=OPENAI_API_KEY, temperature=0)
 
 
 # @current_app.before_request
