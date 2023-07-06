@@ -2,6 +2,7 @@
 import os
 # from urllib.parse import urlparse
 from flask import Flask, request
+from flask_cors import CORS
 from langchain.llms import OpenAI
 from langchain.document_loaders import NotionDBLoader
 # from notion_pages import NotionPageLoader
@@ -12,6 +13,8 @@ NOTION_INSTRUCTIONS_DB = os.getenv('NOTION_INSTRUCTIONS_DB')
 NOTION_EXAMPLES_DB = os.getenv('NOTION_EXAMPLES_DB')
 
 app = Flask(__name__)
+CORS(app)
+CORS(app, resources={r"/*": {"origins": ["*dialogue.co", "http://localhost:4200"]}})
 
 llm = OpenAI(openai_api_key=OPENAI_API_KEY)
 
@@ -60,10 +63,21 @@ def home():
 
 @app.route('/cp', methods=['POST'])
 def cp():
-    """ cp """
+    """ 
+    POST handler for copilot
+    """
+    instructions_content = ""
     if request.method == 'POST':
-        data = request.json
-    return data
+        instructions_content = request.json
+
+    prompt = f"""{instructions_content}\n\n\n
+    # Examples:\n
+    {examples_content}
+    \n\n\n
+    # Assignement: You are asked for assistance and receive the following episode\n
+    {context}"""
+
+    return llm.predict(prompt)
 
 
 @app.route('/about')
