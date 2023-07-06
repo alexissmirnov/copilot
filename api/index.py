@@ -61,23 +61,6 @@ def home():
     """ home """
     return llm.predict("What would be a good company name for a company that makes colorful socks?")
 
-@app.route('/cp', methods=['POST'])
-def cp():
-    """ 
-    POST handler for copilot
-    """
-    instructions_content = ""
-    if request.method == 'POST':
-        instructions_content = request.json
-
-    prompt = f"""{instructions_content}\n\n\n
-    # Examples:\n
-    {examples_content}
-    \n\n\n
-    # Assignement: You are asked for assistance and receive the following episode\n
-    {context}"""
-
-    return llm.predict(prompt)
 
 
 @app.route('/about')
@@ -129,6 +112,28 @@ def copilot():
     Chloe: Do you have a high heart rate?
     Member: Yes
     """
+
+    prompt = f"""{instructions_content}\n\n\n
+    # Examples:\n
+    {examples_content}
+    \n\n\n
+    # Assignement: You are asked for assistance and receive the following episode\n
+    {context}"""
+
+    return llm.predict(prompt)
+
+
+@app.route('/cp', methods=['POST'])
+def cp():
+    """ 
+    POST handler for copilot
+    """
+    instructions_content = ""
+    if request.method == 'POST':
+        instructions_content = request.json
+
+    instructions_content = load_notion_db(NOTION_INSTRUCTIONS_DB)
+    examples_content = load_notion_db(NOTION_EXAMPLES_DB)
 
     prompt = f"""{instructions_content}\n\n\n
     # Examples:\n
