@@ -1,7 +1,7 @@
 ''' main '''
 import os
 # from urllib.parse import urlparse
-from flask import Flask, request, Response
+from flask import Flask, request
 from flask_cors import CORS
 from langchain.llms import OpenAI
 from langchain.document_loaders import NotionDBLoader
@@ -18,10 +18,10 @@ CORS(app, resources={r"/*": {"origins": ["*dialogue.co", "http://localhost:4200"
 llm = OpenAI(openai_api_key=OPENAI_API_KEY)
 
 
-@current_app.before_request
-def basic_authentication():
-    if request.method.lower() == 'options':
-        return Response()
+# @current_app.before_request
+# def basic_authentication():
+#     if request.method.lower() == 'options':
+#         return Response()
     
 def sanitize_string(input_string):
     """ to show the API key """
@@ -60,12 +60,15 @@ def load_notion_db(database_id):
 #     doc = loader.load_page_by_id(page_id)
 #     return doc.page_content
 
-@app.route('/')
+@app.route('/', methods=['GET'])
 def home():
     """ home """
     return llm.predict("What would be a good company name for a company that makes colorful socks?")
 
-
+@app.route('/', methods=['OPTIONS'])
+def home_options():
+    """ home """
+    return ""
 
 @app.route('/about')
 def about():
