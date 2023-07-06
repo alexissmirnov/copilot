@@ -1,5 +1,6 @@
 ''' main '''
 import os
+import json
 # from urllib.parse import urlparse
 from flask import Flask, request
 from flask_cors import CORS
@@ -153,4 +154,7 @@ def cp():
     {context}"""
 
     output = llm.predict(prompt)
-    return output
+    json_output = {
+        "summary": output
+    }
+    return json.dumps(json_output)
