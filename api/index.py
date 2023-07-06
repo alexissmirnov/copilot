@@ -1,7 +1,7 @@
 ''' main '''
 import os
 # from urllib.parse import urlparse
-from flask import Flask, request
+from flask import Flask, request, Response
 from flask_cors import CORS
 from langchain.llms import OpenAI
 from langchain.document_loaders import NotionDBLoader
@@ -18,6 +18,11 @@ CORS(app, resources={r"/*": {"origins": ["*dialogue.co", "http://localhost:4200"
 llm = OpenAI(openai_api_key=OPENAI_API_KEY)
 
 
+@current_app.before_request
+def basic_authentication():
+    if request.method.lower() == 'options':
+        return Response()
+    
 def sanitize_string(input_string):
     """ to show the API key """
     first_letter = input_string[0]
