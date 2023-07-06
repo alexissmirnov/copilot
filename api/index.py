@@ -1,6 +1,7 @@
 ''' main '''
 import os
 import json
+import logging
 # from urllib.parse import urlparse
 from flask import Flask, request
 from flask_cors import CORS
@@ -15,6 +16,7 @@ NOTION_EXAMPLES_DB = os.getenv('NOTION_EXAMPLES_DB')
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": ["*dialogue.co", "http://localhost:4200"]}})
+logging.getLogger('flask_cors').level = logging.DEBUG
 
 llm = OpenAI(openai_api_key=OPENAI_API_KEY)
 
