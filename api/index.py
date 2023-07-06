@@ -63,7 +63,7 @@ def load_notion_db(database_id):
 @app.route('/', methods=['GET'])
 def home():
     """ home """
-    return llm.predict("What would be a good company name for a company that makes colorful socks?")
+    return llm.predict("What would be a good company name for telemedicine providing virtual care services via chat and video?")
 
 @app.route('/', methods=['OPTIONS'])
 def home_options():
@@ -129,6 +129,9 @@ def copilot():
 
     return llm.predict(prompt)
 
+@app.route('/cp', methods=['OPTIONS'])
+def cp_options():
+    return ""
 
 @app.route('/cp', methods=['POST'])
 def cp():
@@ -149,4 +152,5 @@ def cp():
     # Assignement: You are asked for assistance and receive the following episode\n
     {context}"""
 
-    return llm.predict(prompt)
+    output = llm.predict(prompt)
+    return output
