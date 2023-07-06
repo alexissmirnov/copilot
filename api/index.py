@@ -128,9 +128,9 @@ def cp():
     """ 
     POST handler for copilot
     """
-    instructions_content = ""
+    context = ""
     if request.method == 'POST':
-        instructions_content = request.json
+        context = request.json
 
     instructions_content = load_notion_db(NOTION_INSTRUCTIONS_DB)
     examples_content = load_notion_db(NOTION_EXAMPLES_DB)
