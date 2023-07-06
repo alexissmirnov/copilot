@@ -1,7 +1,10 @@
-''' index '''
+''' main '''
 import os
+import json
+import logging
 # from urllib.parse import urlparse
-from flask import Flask
+from flask import Flask, request
+from flask_cors import CORS
 from langchain.llms import OpenAI
 from langchain.document_loaders import NotionDBLoader
 # from notion_pages import NotionPageLoader
@@ -12,10 +15,17 @@ NOTION_INSTRUCTIONS_DB = os.getenv('NOTION_INSTRUCTIONS_DB')
 NOTION_EXAMPLES_DB = os.getenv('NOTION_EXAMPLES_DB')
 
 app = Flask(__name__)
+CORS(app, resources={r"/*": {"origins": ["*dialogue.co", "http://localhost:4200"]}})
+logging.getLogger('flask_cors').level = logging.DEBUG
 
 llm = OpenAI(openai_api_key=OPENAI_API_KEY, temperature=0)
 
 
+# @current_app.before_request
+# def basic_authentication():
+#     if request.method.lower() == 'options':
+#         return Response()
+    
 def sanitize_string(input_string):
     """ to show the API key """
     first_letter = input_string[0]
@@ -53,12 +63,15 @@ def load_notion_db(database_id):
 #     doc = loader.load_page_by_id(page_id)
 #     return doc.page_content
 
-
-@app.route('/')
+@app.route('/', methods=['GET'])
 def home():
     """ home """
-    return llm.predict("What would be a good company name for a company that makes colorful socks?")
+    return llm.predict("What would be a good company name for telemedicine providing virtual care services via chat and video?")
 
+@app.route('/', methods=['OPTIONS'])
+def home_options():
+    """ home """
+    return ""
 
 @app.route('/about')
 def about():
@@ -118,3 +131,32 @@ def copilot():
     {context}"""
 
     return llm.predict(prompt)
+
+@app.route('/cp', methods=['OPTIONS'])
+def cp_options():
+    return ""
+
+@app.route('/cp', methods=['POST'])
+def cp():
+    """ 
+    POST handler for copilot
+    """
+    context = ""
+    if request.method == 'POST':
+        context = request.json
+
+    instructions_content = load_notion_db(NOTION_INSTRUCTIONS_DB)
+    examples_content = load_notion_db(NOTION_EXAMPLES_DB)
+
+    prompt = f"""{instructions_content}\n\n\n
+    # Examples:\n
+    {examples_content}
+    \n\n\n
+    # Assignement: You are asked for assistance and receive the following episode\n
+    {context}"""
+
+    output = llm.predict(prompt)
+    json_output = {
+        "summary": output
+    }
+    return json.dumps(json_output)
