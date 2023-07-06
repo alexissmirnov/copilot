@@ -13,7 +13,7 @@ NOTION_EXAMPLES_DB = os.getenv('NOTION_EXAMPLES_DB')
 
 app = Flask(__name__)
 
-llm = OpenAI(openai_api_key=OPENAI_API_KEY)
+llm = OpenAI(openai_api_key=OPENAI_API_KEY, temperature=0)
 
 
 def sanitize_string(input_string):
