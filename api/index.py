@@ -1,7 +1,7 @@
-''' index '''
+''' main '''
 import os
 # from urllib.parse import urlparse
-from flask import Flask
+from flask import Flask, request
 from langchain.llms import OpenAI
 from langchain.document_loaders import NotionDBLoader
 # from notion_pages import NotionPageLoader
@@ -53,11 +53,17 @@ def load_notion_db(database_id):
 #     doc = loader.load_page_by_id(page_id)
 #     return doc.page_content
 
-
 @app.route('/')
 def home():
     """ home """
     return llm.predict("What would be a good company name for a company that makes colorful socks?")
+
+@app.route('/cp', methods=['POST'])
+def cp():
+    """ cp """
+    if request.method == 'POST':
+        data = request.json
+    return data
 
 
 @app.route('/about')
