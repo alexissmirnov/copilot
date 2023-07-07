@@ -126,7 +126,7 @@ def cp_post():
     """ 
     POST handler for copilot
     """
-    cmd = request.form.get('cmd')
+    cmd = request.args.get('cmd')
     context = ""
 
     if request.method == 'POST':
