@@ -29,7 +29,7 @@ def sanitize_string(input_string):
     return transformed_string
 
 
-def load_notion_db(database_id):
+def load_notion_db(database_id, requested_tag):
     """ loads db contents """
     loader = NotionDBLoader(
         integration_token=NOTION_INTEGRATION_SECRET,
@@ -38,8 +38,9 @@ def load_notion_db(database_id):
     docs = loader.load()
     output = ''
     for doc in docs:
-        output = f"{output}# {doc.metadata['name']}\n{doc.page_content}\n\n"
-
+        doc_tags = doc.metadata.get('tags')
+        if requested_tag in doc_tags:
+            output += f"# {doc.metadata['name']}\n{doc.page_content}\n\n"
     return output
 
 
@@ -125,18 +126,25 @@ def cp_post():
     """ 
     POST handler for copilot
     """
+    cmd = request.form.get('cmd')
     context = ""
     if request.method == 'POST':
         context = request.json
 
-    instructions_content = load_notion_db(NOTION_INSTRUCTIONS_DB)
-    examples_content = load_notion_db(NOTION_EXAMPLES_DB)
+    instructions_content = load_notion_db(NOTION_INSTRUCTIONS_DB, requested_tag=cmd)
+    examples_content = load_notion_db(NOTION_EXAMPLES_DB, requested_tag=cmd)
 
-    prompt = f"""{instructions_content}\n\n\n
-    # Examples:\n
+    prompt = f"""
+    ### Instructions ###
+    {instructions_content}
+    \n\n\n
+
+    ### Examples ###
     {examples_content}
     \n\n\n
-    # Assignement: You are asked for assistance and receive the following episode\n
+    
+    ### Assignment ### 
+    You are asked for assistance and receive the following episode \n
     {context}"""
 
     output = llm.predict(prompt)
