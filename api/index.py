@@ -131,33 +131,57 @@ def cp_post():
 
     if request.method == 'POST':
         context = request.json
-    if cmd != "intake-summary":
-        context = context['note']
+    if cmd == "write-careplan":
+        consult_note = context['note']
+        diagnosis = consult_note['values']['icd11_diagnosis']
+        assessment = consult_note['values']['assessment']
+        plan = consult_note['values']['treatment_plan']
+        context = f""" ASSESSMENT AND PLAN:
+        ICD-11 Diagnosis: {diagnosis}
+        Assessment: {assessment}
+        Treatment Plan: {plan} """
+    
+    if cmd == 'suggest-next-steps':
+        consult_note = context['note']
+        
 
     instructions_content = load_notion_db(NOTION_INSTRUCTIONS_DB, requested_tag=cmd)
     examples_content = load_notion_db(NOTION_EXAMPLES_DB, requested_tag=cmd)
 
     prompt = f"""
+    You are a knowledgeable and effective medical assistant. Please follow the instructions carefully. Look at the Examples and only use Context-Input to generate.
+
     ### Instructions ###
     {instructions_content}
-    \n\n\n
+    \n\n
 
-    ### Examples ###
+    ### Example ###
     {examples_content}
-    \n\n\n
+    \n\n
     
-    ### Assignment ### 
-    You are asked for assistance and receive the following episode \n
-    {context}"""
-
+    ### Context-Input ### 
+    {context}
+    \n Output: \n
+    
+    """
     output = llm.predict(prompt)
-    if cmd == 'suggest-next-steps':
+    if cmd == 'write-careplan':
         json_output = {
             "summary": output.split('Recommendation:')[0],
             "recommendation": 'Recommendation:' + output.split('Recommendation:')[1]
+        }
+    elif cmd == 'suggest-next-steps':
+        output = output.split('\n')
+        final = []
+        for item in output:
+            final.append(item[2:])
+        json_output = {
+            "summary": output,
+            "next-steps": final
         }
     else:
         json_output = {
             "summary": output
         }
     return json.dumps(json_output)
+
