@@ -15,18 +15,11 @@ NOTION_INSTRUCTIONS_DB = os.getenv('NOTION_INSTRUCTIONS_DB')
 NOTION_EXAMPLES_DB = os.getenv('NOTION_EXAMPLES_DB')
 
 app = Flask(__name__)
-# CORS(app, resources={r"/*": {"origins": ["*dialogue.co", "http://localhost:4200"]}})
 CORS(app)
-logging.getLogger('flask_cors').level = logging.DEBUG
 
 llm = OpenAI(openai_api_key=OPENAI_API_KEY, temperature=0, model_name='gpt-4-32k',)
 
 
-# @current_app.before_request
-# def basic_authentication():
-#     if request.method.lower() == 'options':
-#         return Response()
-    
 def sanitize_string(input_string):
     """ to show the API key """
     first_letter = input_string[0]
@@ -50,29 +43,17 @@ def load_notion_db(database_id):
     return output
 
 
-# def load_notion_page_from_url(url) -> str:
-#     """load_notion_page_from_url"""
-#     parsed_url = urlparse(url)
-#     path = parsed_url.path
-
-#     # Get the last portion of the path
-#     page_id = path.rsplit('/', 1)[-1]
-
-#     loader = NotionPageLoader(
-#         integration_token=NOTION_INTEGRATION_SECRET
-#     )
-#     doc = loader.load_page_by_id(page_id)
-#     return doc.page_content
-
 @app.route('/', methods=['GET'])
 def home():
     """ home """
-    return llm.predict("What would be a good company name for telemedicine providing virtual care services via chat and video?")
+    return llm.predict("Company name for providing virtual care services?")
+
 
 @app.route('/', methods=['OPTIONS'])
 def home_options():
     """ home """
     return ""
+
 
 @app.route('/about')
 def about():
@@ -133,12 +114,14 @@ def copilot():
 
     return llm.predict(prompt)
 
+
 @app.route('/cp', methods=['OPTIONS'])
 def cp_options():
     return ""
 
+
 @app.route('/cp', methods=['POST'])
-def cp():
+def cp_post():
     """ 
     POST handler for copilot
     """
