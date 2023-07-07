@@ -19,7 +19,7 @@ app = Flask(__name__)
 CORS(app)
 logging.getLogger('flask_cors').level = logging.DEBUG
 
-llm = OpenAI(openai_api_key=OPENAI_API_KEY, temperature=0, model='gpt-4-32k')
+llm = OpenAI(openai_api_key=OPENAI_API_KEY, temperature=0, model_name='gpt-4-32k',)
 
 
 # @current_app.before_request
