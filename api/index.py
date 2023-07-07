@@ -128,8 +128,11 @@ def cp_post():
     """
     cmd = request.form.get('cmd')
     context = ""
+    
     if request.method == 'POST':
         context = request.json
+    if cmd != "intake-summary":
+        context = context['note']
 
     instructions_content = load_notion_db(NOTION_INSTRUCTIONS_DB, requested_tag=cmd)
     examples_content = load_notion_db(NOTION_EXAMPLES_DB, requested_tag=cmd)
