@@ -128,7 +128,7 @@ def cp_post():
     """
     cmd = request.form.get('cmd')
     context = ""
-    
+
     if request.method == 'POST':
         context = request.json
     if cmd != "intake-summary":
@@ -151,7 +151,13 @@ def cp_post():
     {context}"""
 
     output = llm.predict(prompt)
-    json_output = {
-        "summary": output
-    }
+    if cmd == 'suggest-next-steps':
+        json_output = {
+            "summary": output.split('Recommendation:')[0],
+            "recommendation": 'Recommendation:' + output.split('Recommendation:')[1]
+        }
+    else:
+        json_output = {
+            "summary": output
+        }
     return json.dumps(json_output)
