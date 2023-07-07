@@ -169,10 +169,16 @@ def cp_post():
     """
     output = llm.predict(prompt)
     if cmd == 'write-careplan':
-        json_output = {
-            "summary": output.split('Recommendation:')[0],
-            "recommendation": 'Recommendation:' + output.split('Recommendation:')[1]
-        }
+        try:
+            json_output = {
+                "summary": output.split('Recommendation:')[0],
+                "recommendation": 'Recommendation:' + output.split('Recommendation:')[1]
+            }
+        except IndexError:
+            json_output = {
+                "summary": output,
+                "recommendation": ""
+            }
     elif cmd == 'suggest-next-steps':
         output = output.split('\n')
         final = []
