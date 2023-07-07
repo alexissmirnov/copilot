@@ -17,7 +17,7 @@ NOTION_EXAMPLES_DB = os.getenv('NOTION_EXAMPLES_DB')
 app = Flask(__name__)
 CORS(app)
 
-llm = OpenAI(openai_api_key=OPENAI_API_KEY, temperature=0, model_name='gpt-4')
+llm = OpenAI(openai_api_key=OPENAI_API_KEY, temperature=0, model_name='gpt-3.5-turbo-16k')
 
 
 def sanitize_string(input_string):
