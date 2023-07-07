@@ -143,6 +143,7 @@ def cp_post():
     
     if cmd == 'suggest-next-steps':
         consult_note = context['note']
+        context = consult_note['subNotes']['next_steps_md_np']
         
 
     instructions_content = load_notion_db(NOTION_INSTRUCTIONS_DB, requested_tag=cmd)
