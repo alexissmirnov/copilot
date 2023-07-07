@@ -180,21 +180,15 @@ def cp_post():
                 "recommendation": ""
             }
     elif cmd == 'suggest-next-steps':
+
         inter = output.split('\n')
-        final = []
-        try:
-            for item in inter:
-                final.append(item[2:])
-        except KeyError:
-            pass
         json_output = {
             "summary": output,
-            "next-steps": final
+            "next-steps": inter
         }
     else:
         json_output = {
-            "summary": output,
-            "next-steps": final
+            "summary": output
         }
     return json.dumps(json_output)
 
