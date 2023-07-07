@@ -133,6 +133,7 @@ def cp_post():
         context = request.json
     if cmd == "write-careplan":
         consult_note = context['note']
+        print(consult_note)
         diagnosis = consult_note['values']['icd11_diagnosis']
         assessment = consult_note['values']['assessment']
         plan = consult_note['values']['treatment_plan']
@@ -143,6 +144,7 @@ def cp_post():
     
     if cmd == 'suggest-next-steps':
         consult_note = context['note']
+        print(consult_note)
         context = consult_note['subNotes']['next_steps_md_np']
         
 
@@ -174,8 +176,11 @@ def cp_post():
     elif cmd == 'suggest-next-steps':
         output = output.split('\n')
         final = []
-        for item in output:
-            final.append(item[2:])
+        try:
+            for item in output:
+                final.append(item[2:])
+        except KeyError:
+            pass
         json_output = {
             "summary": output,
             "next-steps": final
